@@ -6,7 +6,7 @@ def PGN_clean(pgn_str):     # there is other data in the pgn with ratings etc. b
     pgn_str = re.sub(r".*\n\n|\{[^}]*} *|\$\d+ *|\d+\.\.\. *", "", pgn_str, 0, re.DOTALL)   #strip out all comments and other stuff so the pgn contains moves only
     return pgn_str
 
-class game:
+class Game:
     def __init__(self):
         self.played_date = date.fromisoformat('2020-01-01')
         self.time_control = 600

@@ -5,7 +5,7 @@ from config import MYSQL
 class Database:
     def __init__(self):
         try:
-            cnx = mysql.connector.connect(user=MYSQL.USER,
+            self.cnx = mysql.connector.connect(user=MYSQL.USER,
                                         password=MYSQL.PASSWORD,
                                         host=MYSQL.HOST,
                                         port=MYSQL.PORT)
@@ -15,10 +15,10 @@ class Database:
             else:
                 print(err)
         else:
-            cnx.close()
+            self.cnx.close()
 
         print(f"Connected to MySQL at {MYSQL.HOST}, on port {MYSQL.PORT}")
-        self.me = cnx.cursor()
+        self.cursor = self.cnx.cursor()
 
         def create_database(cursor):
             try:
@@ -28,21 +28,21 @@ class Database:
                 exit(1)
 
         try:
-            self.me.execute(f"USE {MYSQL.DATABASE}")
+            self.cursor.execute(f"USE {MYSQL.DATABASE}")
         except mysql.connector.Error as err:
             print(f"Database {MYSQL.DATABASE} does not exist.")
             if err.errno == errorcode.ER_BAD_DB_ERROR:
-                create_database(self.me)
+                create_database(self.cursor)
                 print(f"Database {MYSQL.DATABASE} created successfully.")
-                cnx.database = MYSQL.DATABASE
+                self.cnx.database = MYSQL.DATABASE
             else:
                 print(err)
                 exit(1)
 
-    def startup(self):
+    def __enter__(self):
         try:
             print("Creating games table:")
-            self.me.execute("""CREATE TABLE IF NOT EXISTS 'games' (
+            self.cursor.execute("""CREATE TABLE IF NOT EXISTS 'games' (
                         'game_id' INT NOT NULL AUTO_INCREMENT, 
                         'played_date' DATE, 
                         'time_control' SMALLINT, 
@@ -56,15 +56,20 @@ class Database:
                 print(err.msg)
         else:
             print("OK")
+            return self
+        
 
     def addgame(self, game):
-        game_id = self.me.lastrowid
-        self.me.execute(f"""INSERT INTO games 
-                (game_id, played_date, time_control, is_white, win, my_rating, moves)
-                VALUES {game_id}, {game.played_date}, {game.time_control}, {game.is_white}, {game.win}, {game.my_rating}, {game.moves})""")
+        game_id = self.cursor.lastrowid
+        self.cursor.execute(f"""INSERT INTO games 
+                (game_id, played_date, time_control, colour, result, my_rating, moves)
+                VALUES {game_id}, {game.played_date}, {game.time_control}, {game.colour}, {game.result}, {game.my_rating}, {game.moves})""")
 
     def deletegame(self, id):
-        self.me.execute(f"DELETE FROM games WHERE game_id = {id}")
+        self.cursor.execute(f"DELETE FROM games WHERE game_id = {id}")
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.cnx.close()
 
 
 
