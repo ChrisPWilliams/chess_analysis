@@ -16,10 +16,9 @@ class Database:
             else:
                 print(err)
         else:
-            self.cnx.close()
+            print(f"Connected to MySQL at {MYSQL.HOST}, on port {MYSQL.PORT}")
+            self.cursor = self.cnx.cursor()
 
-        print(f"Connected to MySQL at {MYSQL.HOST}, on port {MYSQL.PORT}")
-        self.cursor = self.cnx.cursor()
 
     def __enter__(self):
         try:
@@ -38,7 +37,7 @@ class Database:
                 print(err.msg)
         else:
             print("OK")
-            return self
+        return self
         
 
     def addgame(self, game):
