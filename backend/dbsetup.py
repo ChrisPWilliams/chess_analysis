@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 from config import MYSQL
 
-class db:
+class Database:
     def __init__(self):
         try:
             cnx = mysql.connector.connect(user=MYSQL.USER,
@@ -44,12 +44,12 @@ class db:
             print("Creating games table:")
             self.me.execute("""CREATE TABLE IF NOT EXISTS 'games' (
                         'game_id' INT NOT NULL AUTO_INCREMENT, 
-                        'played_date' DATE NOT NULL, 
-                        'time_control' SMALLINT NOT NULL, 
-                        'is_white' BOOLEAN, 
-                        'win' BOOLEAN,
+                        'played_date' DATE, 
+                        'time_control' SMALLINT, 
+                        'colour' ENUM('white', 'black'), 
+                        'result' ENUM('win', 'checkmated', 'agreed', 'repetition', 'timeout', 'resigned', 'stalemate', 'lose', 'insufficient', '50move', 'abandoned', 'threecheck', 'timevsinsufficient'),
                         'my_rating' SMALLINT,
-                        'moves' VARCHAR(20000),
+                        'moves' VARCHAR(20000) NOT NULL,
                         PRIMARY KEY ('game_id')) 
                         ENGINE=InnoDB""")               #should support games of up to 1000 moves, if you're playing more than 1000 move chess games what the fuck are you doing
         except mysql.connector.Error as err:
