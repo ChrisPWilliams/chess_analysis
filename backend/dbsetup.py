@@ -8,7 +8,8 @@ class Database:
             self.cnx = mysql.connector.connect(user=MYSQL.USER,
                                         password=MYSQL.PASSWORD,
                                         host=MYSQL.HOST,
-                                        port=MYSQL.PORT)
+                                        port=MYSQL.PORT,
+                                        database=MYSQL.DATABASE)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
@@ -19,25 +20,6 @@ class Database:
 
         print(f"Connected to MySQL at {MYSQL.HOST}, on port {MYSQL.PORT}")
         self.cursor = self.cnx.cursor()
-
-        def create_database(cursor):
-            try:
-                cursor.execute(f"CREATE DATABASE {MYSQL.DATABASE} DEFAULT CHARACTER SET 'utf8'")
-            except mysql.connector.Error as err:
-                print(f"Failed creating database: {err}")
-                exit(1)
-
-        try:
-            self.cursor.execute(f"USE {MYSQL.DATABASE}")
-        except mysql.connector.Error as err:
-            print(f"Database {MYSQL.DATABASE} does not exist.")
-            if err.errno == errorcode.ER_BAD_DB_ERROR:
-                create_database(self.cursor)
-                print(f"Database {MYSQL.DATABASE} created successfully.")
-                self.cnx.database = MYSQL.DATABASE
-            else:
-                print(err)
-                exit(1)
 
     def __enter__(self):
         try:
