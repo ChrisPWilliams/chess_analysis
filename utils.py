@@ -8,7 +8,7 @@ def PGN_clean(pgn_str):     # there is other data in the pgn with ratings etc. b
 
 class Game:
     def __init__(self):
-        self.played_date = date.fromisoformat('2020-01-01')
+        self.played_date = date(2020,1,1)
         self.time_control = 600
         self.colour = "white"
         self.result = "stalemate"
@@ -18,8 +18,9 @@ class Game:
 
     def load_from_json(self, gamejson):
         if gamejson['rules'] == 'chess':
-            initial_date_str = re.search(r'(?<=\[Date \\\")[^\\\"]*', gamejson['pgn']).group()
-            self.played_date = date.fromisoformat(re.sub("\.","-", initial_date_str, 0))
+            initial_date_str = re.search(r'(?<=\[Date \")[^\"]*', gamejson['pgn']).group()
+            dateargs = re.split("\.", initial_date_str)
+            self.played_date = date(*[int(x) for x in dateargs])
             self.time_control = gamejson['time_control']
             if gamejson['white']['username'] == self.user:
                 self.colour = 'white'
