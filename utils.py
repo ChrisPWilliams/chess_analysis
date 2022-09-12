@@ -14,15 +14,14 @@ class Game:
         self.result = "stalemate"
         self.my_rating = 1000
         self.moves = ""
-        self.user = "CHR1SZ7"
 
-    def load_from_json(self, gamejson):
+    def load_from_json(self, gamejson, user):
         if gamejson['rules'] == 'chess':
             initial_date_str = re.search(r'(?<=\[Date \")[^\"]*', gamejson['pgn']).group()
             dateargs = re.split("\.", initial_date_str)
             self.played_date = date(*[int(x) for x in dateargs])
             self.time_control = gamejson['time_control']
-            if gamejson['white']['username'] == self.user:
+            if gamejson['white']['username'] == user:
                 self.colour = 'white'
             else:
                 self.colour = 'black'

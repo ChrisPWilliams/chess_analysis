@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import errorcode
 from config import MYSQL
+from utils import Game
 
 class Database:
     def __init__(self):
@@ -55,6 +56,26 @@ class Database:
         print("Clearing all games from database(!)")
         self.cursor.execute(f"DELETE FROM games WHERE game_id = *")
         self.cnx.commit()
+
+    def most_recent_update(self):
+        self.cursor.execute(f"SELECT played_date FROM games WHERE game_id = MAX(game_id)")
+        for (played_date) in self.cursor:
+            date = played_date
+        return date
+    
+    def fetch_on_date(self, date):
+        self.cursor.execute(f"SELECT time_control, colour, result, my_rating, moves FROM games WHERE played_date = %s", (date))
+        games = []
+        for (time_control, colour, result, my_rating, moves) in self.cursor:
+            game = Game()
+            game.played_date = date
+            game.colour = colour
+            game.time_control = time_control
+            game.result = result
+            game.my_rating = my_rating
+            game.moves = moves
+            games.append(game)
+        return games
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.cnx.close()

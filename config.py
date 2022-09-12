@@ -8,5 +8,5 @@ class MYSQL:
     PASSWORD=os.environ.get('DB_PASS') or default_connectors.DB_PASS
     HOST=os.environ.get('DB_HOST') or default_connectors.HOST
 
-class CHESS:
+class CHESS_DOT_COM:
     USER=default_connectors.CHESS_USER
