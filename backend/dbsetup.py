@@ -50,6 +50,11 @@ class Database:
     def deletegame(self, id):
         self.cursor.execute(f"DELETE FROM games WHERE game_id = {id}")
         self.cnx.commit()
+    
+    def deleteall(self):
+        print("Clearing all games from database(!)")
+        self.cursor.execute(f"DELETE FROM games WHERE game_id = *")
+        self.cnx.commit()
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.cnx.close()
