@@ -23,7 +23,7 @@ class Database:
 
     def __enter__(self):
         try:
-            print("Creating games table:")
+            print("Connecting to games table:")
             self.cursor.execute("""CREATE TABLE IF NOT EXISTS games (
                         game_id INT NOT NULL AUTO_INCREMENT, 
                         played_date DATE, 
@@ -54,7 +54,7 @@ class Database:
     
     def deleteall(self):
         print("Clearing all games from database(!)")
-        self.cursor.execute(f"DELETE FROM games WHERE game_id = *")
+        self.cursor.execute(f"DELETE FROM games")
         self.cnx.commit()
 
     def most_recent_update(self):
