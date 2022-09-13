@@ -5,16 +5,16 @@ from chessdotcom import get_player_games_by_month
 
 with Database() as db:
     most_recent_date = db.most_recent_update()
+    games_to_check = db.fetch_on_date(most_recent_date)
     response = get_player_games_by_month(CHESS_DOT_COM.USER, most_recent_date.year, most_recent_date.month)
     responsejson = response.json
-    games_to_check = db.fetch_on_date(most_recent_date)
     for gamejson in responsejson['games']:
         game = Game()
-        game.load_from_json(gamejson)
+        game.load_from_json(gamejson, CHESS_DOT_COM.USER)
         if game.played_date == most_recent_date:
             included = False
             for game_to_check in games_to_check:
-                if game == game_to_check:
+                if vars(game) == vars(game_to_check):
                     included = True
                     break
             if not included:

@@ -33,7 +33,7 @@ class Database:
                         my_rating INT,
                         moves VARCHAR(10000) NOT NULL,
                         PRIMARY KEY (game_id)) 
-                        ENGINE=InnoDB""")               #should support games of up to 1000 moves, if you're playing more than 1000 move chess games what the fuck are you doing
+                        ENGINE=InnoDB""")               # should support games of up to 1000 moves, if you're playing more than 1000 move chess games what the fuck are you doing
         except mysql.connector.Error as err:
                 print(err.msg)
         else:
@@ -58,13 +58,13 @@ class Database:
         self.cnx.commit()
 
     def most_recent_update(self):
-        self.cursor.execute(f"SELECT played_date FROM games WHERE game_id = MAX(game_id)")
+        self.cursor.execute(f"SELECT played_date FROM games WHERE game_id IN (SELECT MAX(game_id) FROM games)")
         for (played_date) in self.cursor:
             date = played_date
-        return date
+        return date[0]          # escape from tuple to return datetime.date()
     
     def fetch_on_date(self, date):
-        self.cursor.execute(f"SELECT time_control, colour, result, my_rating, moves FROM games WHERE played_date = %s", (date))
+        self.cursor.execute(f"SELECT time_control, colour, result, my_rating, moves FROM games WHERE played_date = %s", (date,))
         games = []
         for (time_control, colour, result, my_rating, moves) in self.cursor:
             game = Game()
